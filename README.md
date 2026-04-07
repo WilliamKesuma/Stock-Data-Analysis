@@ -98,4 +98,4 @@ This project is part of a thesis and may have specific academic usage restrictio
 
 ## Contact
 
-For questions or collaboration, please reach out via GitHub.
+For questions or collaboration, please reach out via email (Williamskesuma@gmail.com).
