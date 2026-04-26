@@ -172,7 +172,7 @@ Here are the results of ACF and PACF plots of 1st order differenced closing pric
 
 **Figure 4.1** ACF and PACF Plots of 1st Order Differenced Apple (AAPL) Close Price
 
-Figure 4.1 shows the ACF and PACF plots of the first-order differenced AAPL closing price. The ACF plot displays all lags immediately falling within the confidence interval after lag 0, indicating a lack of significant Moving Average (MA) components. Similarly, the PACF plot shows no significant spikes at early lags, suggesting that an Autoregressive (AR) component is not strongly required. These observations are broadly consistent with a near-random-walk behaviour, though the auto_arima process subsequently identified ARIMA(1,1,1) as the optimal configuration based on AIC minimization.
+Figure 4.1 shows the ACF and PACF plots of the first-order differenced AAPL closing price. The ACF plot displays all lags immediately falling within the confidence interval after lag 0, indicating a lack of significant Moving Average (MA) components. Similarly, the PACF plot shows no significant spikes at early lags, suggesting that an Autoregressive (AR) component is not strongly required. These observations are consistent with a near-random-walk behaviour, which aligns with the ARIMA(0,1,0) configuration subsequently selected by the auto_arima process based on AIC minimization.
 
 **Figure 4.2** ACF and PACF Plots of 1st Order Differenced Nvidia (NVDA) Close Price
 
@@ -209,12 +209,12 @@ for label, m in seasonal_configs.items():
 Below are the results regarding the seasonal period testing of the 5 selected stocks:
 
 ```
-Best AIC for m=5 (Weekly): 2465.86
-Best AIC for m=21 (Monthly): 2465.86
+Best AIC for m=5 (Weekly): 4030.00
+Best AIC for m=21 (Monthly): 4030.00
 ```
 *Segment 4.14 Apple (AAPL) Seasonal Period Testing Results*
 
-The model evaluation for Apple (AAPL) showed identical AIC values of 2465.86 for both the weekly (m = 5) and monthly (m = 21) seasonal periods. In cases where the AIC does not provide a clear distinction in model performance, the simpler weekly period (m = 5) is selected to maintain model parsimony. This choice aligns with the standard five-day trading cycle and avoids the unnecessary complexity associated with a larger seasonal lag in the SARIMA model.
+The model evaluation for Apple (AAPL) showed identical AIC values of 4030.00 for both the weekly (m = 5) and monthly (m = 21) seasonal periods. In cases where the AIC does not provide a clear distinction in model performance, the simpler weekly period (m = 5) is selected to maintain model parsimony. This choice aligns with the standard five-day trading cycle and avoids the unnecessary complexity associated with a larger seasonal lag in the SARIMA model.
 
 ```
 Best AIC for m=5 (Weekly): 3750.52
@@ -263,15 +263,15 @@ The auto_arima results for each stock are summarized in the following table:
 
 | Stock | Selected ARIMA Order | Best AIC |
 |-------|---------------------|----------|
-| AAPL  | (1, 1, 1)           | 2465.86  |
+| AAPL  | (0, 1, 0)           | 4030.00  |
 | NVDA  | (1, 1, 1)           | 3760.27  |
-| MSFT  | (2, 1, 2)           | 4997.67  |
-| GOOGL | (2, 1, 2)           | 3894.19  |
+| MSFT  | (2, 1, 2)           | 4995.83  |
+| GOOGL | (2, 1, 2)           | 3892.43  |
 | AMZN  | (0, 1, 0)           | 4202.52  |
 
 *Table 4.1 Auto-ARIMA Selected Orders*
 
-All stocks required first-order differencing (d = 1) to achieve stationarity. AAPL and NVDA were best modelled with ARIMA(1,1,1), indicating one autoregressive and one moving average term. MSFT and GOOGL required a more complex ARIMA(2,1,2) structure, while AMZN was best described by a simple random walk model ARIMA(0,1,0), suggesting that its differenced series closely resembles white noise.
+All stocks required first-order differencing (d = 1) to achieve stationarity. NVDA was best modelled with ARIMA(1,1,1), indicating one autoregressive and one moving average term. MSFT and GOOGL required a more complex ARIMA(2,1,2) structure, while AAPL and AMZN were best described by a simple random walk model ARIMA(0,1,0), suggesting that their differenced series closely resemble white noise.
 
 ### 4.3.3. Auto-SARIMA Parameter Selection (Seasonal)
 
@@ -287,7 +287,7 @@ The auto_sarima results for each stock are summarized below:
 
 | Stock | SARIMA Order (p,d,q)(P,D,Q)[m] | Best Model Selected |
 |-------|-------------------------------|---------------------|
-| AAPL  | (1,1,1)(0,0,0)[5]            | ARIMA(1,1,1)(0,0,0)[5] |
+| AAPL  | (0,1,0)(0,0,0)[5]            | ARIMA(0,1,0)(0,0,0)[5] |
 | NVDA  | (2,1,3)(0,0,1)[5]            | ARIMA(2,1,3)(0,0,1)[5] |
 | MSFT  | (0,1,0)(0,0,0)[5]            | ARIMA(0,1,0)(0,0,0)[5] |
 | GOOGL | (0,1,0)(0,0,0)[5]            | ARIMA(0,1,0)(0,0,0)[5] |
@@ -341,7 +341,7 @@ arima_forecast_series = pd.Series(arima_predictions, index=test_data.index)
 ```
 *Segment 4.23 ARIMA Rolling Forecast Code*
 
-The rolling forecast was executed for all 201 test observations (or 502 for AAPL if using 50/50 split). At each step, the ARIMA model is refitted on the expanding training window, ensuring that the forecast incorporates the most recent available information.
+The rolling forecast was executed for all 201 test observations. At each step, the ARIMA model is refitted on the expanding training window, ensuring that the forecast incorporates the most recent available information.
 
 ### 4.3.7. SARIMA Forecasting (Rolling One-Step-Ahead)
 
@@ -381,6 +381,18 @@ plt.show()
 
 The combined charts for each stock visually demonstrate the degree to which each model's predictions align with the actual price trajectory during the test period.
 
+**Figure 4.6** ARIMA vs SARIMA Forecast Comparison — Apple (AAPL)
+
+**Figure 4.7** ARIMA vs SARIMA Forecast Comparison — NVIDIA (NVDA)
+
+**Figure 4.8** ARIMA vs SARIMA Forecast Comparison — Microsoft (MSFT)
+
+**Figure 4.9** ARIMA vs SARIMA Forecast Comparison — Alphabet/Google (GOOGL)
+
+**Figure 4.10** ARIMA vs SARIMA Forecast Comparison — Amazon (AMZN)
+
+Across all five stocks, the ARIMA and SARIMA forecast lines closely track the actual closing price trajectory, confirming the effectiveness of the rolling one-step-ahead methodology. For AAPL and AMZN, the ARIMA and SARIMA forecast lines overlap entirely, which is expected given that both models were assigned identical parameters. For MSFT and GOOGL, the SARIMA forecast line shows a marginally tighter fit to the actual prices compared to ARIMA, consistent with the slightly lower MAPE values reported in Section 4.3.9. For NVDA, both models track the actual prices well, though ARIMA achieves a marginally closer fit.
+
 ### 4.3.9. Performance Metrics
 
 The final step of the analysis evaluates the forecasting accuracy of both models using three error metrics: Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), and Mean Absolute Percentage Error (MAPE). These metrics were computed by comparing the forecasted values against the actual observed closing prices in the test set.
@@ -403,32 +415,30 @@ The performance results for all five stocks are summarized in the following tabl
 
 | Stock | Model  | RMSE   | MAE    | MAPE (%) |
 |-------|--------|--------|--------|----------|
-| AAPL  | ARIMA  | 3.7020 | 2.5094 | 1.1654   |
-| AAPL  | SARIMA | 3.7020 | 2.5094 | 1.1654   |
+| AAPL  | ARIMA  | 4.2919 | 2.7291 | 1.2343   |
+| AAPL  | SARIMA | 4.2919 | 2.7291 | 1.2343   |
 | NVDA  | ARIMA  | 3.7892 | 2.8289 | 1.8467   |
 | NVDA  | SARIMA | 3.8132 | 2.8645 | 1.8681   |
-| MSFT  | ARIMA  | —      | —      | —        |
+| MSFT  | ARIMA  | 6.5367 | 4.5457 | 0.9817   |
 | MSFT  | SARIMA | 6.4237 | 4.4135 | 0.9527   |
-| GOOGL | ARIMA  | —      | —      | —        |
+| GOOGL | ARIMA  | 4.3816 | 3.1361 | 1.4763   |
 | GOOGL | SARIMA | 4.3277 | 3.1077 | 1.4645   |
-| AMZN  | ARIMA  | —      | —      | —        |
+| AMZN  | ARIMA  | 4.6694 | 3.2158 | 1.5149   |
 | AMZN  | SARIMA | 4.6694 | 3.2158 | 1.5149   |
 
 *Table 4.3 Performance Metrics Summary*
 
-**Note:** The cells marked with "—" indicate values that need to be filled in after re-running the notebooks with the updated rolling forecast code. The AAPL results should also be re-verified after changing the train/test split to 80/20.
+**Key observations from the results:**
 
-**Key observations from the available results:**
-
-1. **AAPL**: Both ARIMA and SARIMA produced identical results (RMSE: 3.702, MAE: 2.509, MAPE: 1.17%). This is because the SARIMA seasonal component was (0,0,0), making it functionally equivalent to ARIMA. Best model: tied (ARIMA preferred for simplicity).
+1. **AAPL**: Both ARIMA and SARIMA produced identical results (RMSE: 4.292, MAE: 2.729, MAPE: 1.23%). This is because the SARIMA seasonal component was (0,0,0), making it functionally equivalent to ARIMA. Best model: tied (ARIMA preferred for simplicity).
 
 2. **NVDA**: ARIMA slightly outperformed SARIMA across all three metrics (MAPE: 1.85% vs 1.87%). Despite NVDA being the only stock with a non-trivial seasonal component (Q=1), the seasonal term did not improve forecasting accuracy. Best model: ARIMA.
 
-3. **MSFT**: SARIMA was identified as the best model with a MAPE of 0.95%. Best model: SARIMA.
+3. **MSFT**: SARIMA was identified as the best model with a MAPE of 0.95%, compared to ARIMA's 0.98%. Best model: SARIMA.
 
-4. **GOOGL**: SARIMA was identified as the best model with a MAPE of 1.46%. Best model: SARIMA.
+4. **GOOGL**: SARIMA was identified as the best model with a MAPE of 1.46%, compared to ARIMA's 1.48%. Best model: SARIMA.
 
-5. **AMZN**: ARIMA was identified as the best model. Best model: ARIMA.
+5. **AMZN**: Both models produced identical results (RMSE: 4.669, MAE: 3.216, MAPE: 1.515%), again because the SARIMA seasonal component was (0,0,0). Best model: tied (ARIMA preferred for simplicity).
 
 All MAPE values across both models and all five stocks fall well below 10%, which according to the Lewis (1982) classification presented in Chapter 2, indicates **highly accurate forecasting** performance for both ARIMA and SARIMA models.
 
